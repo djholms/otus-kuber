@@ -1,0 +1,25 @@
+Step-by-Step implementation:
+
+##################################################################################################################################
+# Step 0: Setup cluster
+minikube start
+minikube dashboard
+
+kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
+kubectl get deployments
+
+kubectl get pods
+kubectl get events
+
+kubectl expose deployment hello-node --type=LoadBalancer --port=8080
+kubectl get svc
+
+minikube service hello-node
+
+
+kubectl create -f webserver.yaml
+kubectl create -f webserver-svc.yaml
+kubectl expose deployment webserver --name=web-service --type=NodePort
+kubectl describe service web-service
+
+minikube service web-service
