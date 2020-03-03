@@ -99,24 +99,33 @@ kubectl auth can-i get deployments --as system:serviceaccounts:dev:alice
 kubectl apply -f demo07-rolebinding.yaml 
 kubectl auth can-i get deployments --as system:serviceaccount:dev:alice -n dev
 
-
-
-
-
-
-
-
-
-
-
-
-
 start the firewall
 sudo systemctl start firewalld.service
 
-
-
-
-
 HW #2
+task 1
 
+apply -f sa-bob.yaml
+apply -f sa-dave.yaml
+apply -f rolebinding-bob.yaml
+
+ kubectl get clusterrolebindings.rbac.authorization.k8s.io | grep -v system
+ kubectl get clusterrolebindings.rbac.authorization.k8s.io bob-admin -o yaml
+
+
+task 2
+kubectl apply -f ns-prometheus.yaml 
+kubectl apply -f sa-carol.yaml 
+
+kubectl apply -f clusterrole-read.yaml 
+kubectl apply binding-sa.yaml 
+kubectl apply -f binding-sa.yaml 
+
+task 3
+
+kubectl get clusterrole -n dev | grep -v system:
+kubectl apply -f bindings.yaml 
+kubectl apply -f ns-dev.yaml 
+kubectl apply -f sa.yaml 
+
+kubectl get rolebindings.rbac.authorization.k8s.io -n dev | grep -v system:
