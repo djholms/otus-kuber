@@ -1,0 +1,122 @@
+Security topics
+
+kubectl cluster-info dump | less
+/apiserver # find it
+
+## Demo 1
+Stop the firewall!!!!
+sudo systemctl stop firewalld.service
+
+minikube mount /home/holms/projects/otus-kuber/kubernetes-security/examples/demo1/:/var/lib/minikube/certs/minikube
+
+minikube start --extra-config=apiserver.basic-auth-file=/var/lib/minikube/certs/minikube/users
+kubectl cluster-info dump | less
+/basic-auth
+
+
+
+## Demo 2
+cp /home/holms/projects/otus-kuber/kubernetes-security/examples/demo2/config-static-admin ~/.kube
+
+kubectl config view
+export KUBECONFIG=~/.kube/config:~/.kube/config-static-admin
+kubectl config view
+
+kubectl config get-contexts
+kubectl config use-context minikube-static
+
+kubectl cluster-info dump # we'll get the error
+
+
+## Demo 3
+kubectl config use-context minikube
+kubectl apply -f demo03-sa.yaml
+
+kubectl get sa
+# get tokens
+kubectl describe sa service-admin  
+
+# get decoded tokens
+kubectl get secret service-admin-token-dcgc5 -o "jsonpath={.data.token}" | base64 -d
+#copy token to config-service-admin.yaml in token section
+
+copy certificate from ca.crt into config-service-admin.yaml:
+kubectl get secret service-admin-token-dcgc5 -o yaml
+
+cp config-service-admin.yaml ~/.kube/
+export KUBECONFIG=~/.kube/config:~/.kube/config-static-admin:~/.kube/config-service-admin.yaml
+kubectl config view 
+
+kubectl config get-contexts
+kubectl config use-context minikube-service
+# we'll get the error authorization error
+kubectl cluster-info dump 
+
+
+## Demo 4
+# Roles
+kubectl get clusterrole | grep -v system:
+kubectl get clusterroles cluster-admin -o yaml
+
+kubectl get clusterrolebindings.rbac.authorization.k8s.io | grep -v system:
+kubectl get clusterrolebindings.rbac.authorization.k8s.io cluster-admin -o yaml
+
+# Stop minikube
+minikube stop
+# Remount users file
+# Start
+minikube start
+# restart minikube using following command
+minikube start --extra-config=apiserver.basic-auth-file=/var/lib/minikube/certs/minikube/users
+
+kubectl config view
+kubectl config get-contexts
+kubectl config use-context minikube-static
+
+# it works!!!
+kubectl cluster-info dump | grep auth
+
+
+## Demo 6
+kubectl apply -f demo06-da-power.yaml
+kubectl config get-contexts
+kubectl config use-context minikube-service
+
+# it works
+kubectl cluster-info dump | grep auth
+
+
+## Demo 7
+
+kubectl delete clusterrolebindings.rbac.authorization.k8s.io da-power
+kubectl config use-context minikube
+
+kubectl apply -f demo07-namespaces.yaml
+kubectl get sa -n dev
+
+kubectl auth can-i get deployments --as system:serviceaccounts:dev:alice
+
+kubectl apply -f demo07-rolebinding.yaml 
+kubectl auth can-i get deployments --as system:serviceaccount:dev:alice -n dev
+
+
+
+
+
+
+
+
+
+
+
+
+
+start the firewall
+sudo systemctl start firewalld.service
+
+
+
+
+
+HW #2
+
