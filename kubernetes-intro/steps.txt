@@ -1,10 +1,11 @@
 Step-by-Step implementation:
 
 ##################################################################################################################################
-# Step 0: Setup cluster
+# Step 0: Setup minikube cluster
 minikube start
 minikube dashboard
 
+# Step 1: Create simple deployment
 kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
 kubectl get deployments
 
@@ -16,6 +17,9 @@ kubectl get svc
 
 minikube service hello-node
 
+# Step 2: Create simple web application deployment
+kubectl apply -f web-pod.yaml
+kubectl apply -f webserver-svc.yaml
 
 kubectl create -f webserver.yaml
 kubectl create -f webserver-svc.yaml
@@ -23,3 +27,13 @@ kubectl expose deployment webserver --name=web-service --type=NodePort
 kubectl describe service web-service
 
 minikube service web-service
+
+
+# Build the container image
+cd /home/holms/projects/otus-kuber/kubernetes-intro/web
+docker build -t djholms/kube-nginx .
+docker push djholms/kube-nginx
+
+# Run Web app
+kubectl apply -f web-pod.yaml 
+kubectl get po
