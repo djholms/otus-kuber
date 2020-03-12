@@ -15,6 +15,14 @@ spec:
   containers:
   - name: web
     image: djholms/kube-nginx
+    # --- BEGIN Probe ---
+    readinessProbe:
+      httpGet:
+        path: /index.html
+        port: 8000
+    livenessProbe:
+      tcpSocket: { port: 8000 }
+    # --- END Probe ---    
     ports:
       - containerPort: 8000
     volumeMounts:

@@ -1,6 +1,7 @@
 # otus-kuber
 Tasks from Otus Kubernetes Course
 
+HW #1
 
 
 HW #2. kubernetes-security
